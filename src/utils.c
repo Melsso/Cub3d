@@ -1,25 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/11 15:56:43 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/11 16:00:20 by smallem          ###   ########.fr       */
+/*   Created: 2023/12/12 18:10:47 by smallem           #+#    #+#             */
+/*   Updated: 2023/12/12 18:18:16 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
-int	main(int argc, char **argv)
+void	load_images(t_cub *data)
 {
-	t_cub	data;
+	int			fd;
+	mlx_image_t	*img;
 
-	if (argc != 2)
-	{
-		printf("Invalid number of arguments!\n");
-		exit(1);
-	}
-	
+	fd = open(data->nop, O_RDONLY);
+	if (fd < 0)
+		ft_error("Error\nCould not open image!", data, NULL, 1);
 }

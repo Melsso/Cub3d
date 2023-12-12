@@ -1,4 +1,4 @@
-NAME = minirt
+NAME = cub3d
 
 CC = cc
 
@@ -10,13 +10,13 @@ SRC_DIR = src/
 GL_FLAG		=	-lglfw -L
 GL_PATH		=	/Users/$(USER)/.brew/opt/glfw/lib/
 
-SRC		:=	check.c \
-			rendering.c \
-			utils.c \
-			main.c \
-			check_utils.c \
-			check_utils1.c \
+SRC		:=	main.c \
 			get_next_line.c \
+			parse.c \
+			parse_utils.c \
+			parse_utils2.c \
+			utils.c \
+			error.c \
 
 SRCS = $(addprefix $(SRC_DIR), $(SRC))
 OBJ = $(SRC:.c=.o)
