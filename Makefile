@@ -15,6 +15,7 @@ SRC		:=	main.c \
 			parse.c \
 			parse_utils.c \
 			parse_utils2.c \
+			render.c \
 			utils.c \
 			error.c \
 
@@ -45,7 +46,6 @@ $(OBJ_DIR):
 $(NAME): $(OBJS)
 	$(CC) $(LDFLAGS) $(CFLAGS) $(LIBMLX42) $(LIBFT) $(FRAMEWORK) $(OBJS) ${GL_FLAG} ${GL_PATH} -o $(NAME)
 	# $(CC) $(LDFLAGS) $(CFLAGS) $(LIBMLX42) $(LIBGLFW) $(LIBFT) $(FRAMEWORK) $(OBJS) -o $(NAME)
-	clear
 
 install_brew:
 	@echo "----- installing brew -----"
