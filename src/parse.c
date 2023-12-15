@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:00:26 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/12 18:04:40 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/15 19:04:18 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	check_contents(char *line, t_cub *data)
 	}
 	if (count != 6)
 		ft_error("Error\nIncomplete map", data, NULL, 1);
-	trim_input(data);
 	get_paths(data);
 }
 
@@ -65,33 +64,6 @@ char	*read_stuff(t_cub *data, int fd)
 	return (line);
 }
 
-static char	*fill_line(t_cub *data, char **map, char *line, char c)
-{
-	char	**mat;
-	char	*res;
-	char	*tmp;
-	int		k;
-	int		i;
-
-	mat = ft_split(line, c);
-	if (!mat)
-		ft_error("Error\nMalloc error!", data, map, 1);
-	res = ft_strdup("");
-	if (!res)
-		call_err("Error\nMalloc error!", data, map, mat);
-	k = -1;
-	while (mat[++k])
-	{
-		tmp = res;
-		res = ft_strjoin(tmp, mat[k]);
-		free(tmp);
-		if (!res)
-			call_err("Error\nMalloc error!", data, map, mat);
-	}
-	free_split(mat);
-	return (res);
-}
-
 void	copy_map(t_cub *data, char **map)
 {
 	int		i;
@@ -101,11 +73,7 @@ void	copy_map(t_cub *data, char **map)
 	i = 5;
 	j = 0;
 	while (data->map[++i])
-	{
-		line = fill_line(data, map, data->map[i], ' ');
-		map[j++] = fill_line(data, map, line, '\t');
-		free(line);
-	}
+		map[j++] = data->map[i];
 	map[j] = NULL;
 	free_split(data->map);
 	data->map = map;

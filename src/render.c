@@ -6,67 +6,11 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 13:53:55 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/14 19:44:28 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/15 19:22:06 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
-
-static void	print_map(t_cub *data)
-{
-	int	x;
-	int	y;
-
-	y = -1;
-	while (data->map[++y])
-	{
-		x = -1;
-		while (data->map[y][++x])
-		{
-			if (data->map[y][x] == '1')
-				mlx_image_to_window(data->win, data->so, x * 64, y * 64);
-		}
-	}
-	if (data->f)
-		mlx_delete_image(data->win, data->f);
-	data->f = mlx_new_image(data->win, 1024, 512);
-}
-
-static void	print_ray(t_cub *data)
-{
-	int x0,y0,x1,y1;
-	x0 = data->p.x;
-	y0 = data->p.y;
-	x1 = data->p.x + data->p.dx*5;
-	y1 = data->p.y + data->p.dy*5;
-	int dx = abs(x1 - x0);
-    int dy = abs(y1 - y0);
-    int sx = (x0 < x1) ? 1 : -1;
-    int sy = (y0 < y1) ? 1 : -1;
-    int err = dx - dy;
-    while (1)
-    {
-        mlx_put_pixel(data->f, x0, y0, 0xFF0000FF);
-
-        if (x0 == x1 && y0 == y1)
-            break;
-
-        int e2 = 2 * err;
-
-        if (e2 > -dy)
-        {
-            err -= dy;
-            x0 += sx;
-        }
-
-        if (e2 < dx)
-        {
-            err += dx;
-            y0 += sy;
-        }
-    }
-	mlx_image_to_window(data->win, data->f, 0, 0);
-}
 
 static void	print_r(t_cub *data, int x0, int y0, int x1, int y1)
 {
@@ -104,17 +48,6 @@ static void	draw_rays(t_cub *data)
 	int r,mx,my,mp,dof,side; float vx,vy,rx,ry,ra,xo,yo,disV,disH; 
  
 	ra=fixAng(data->p.pa+30);                                                              //ray set back 30 degrees
-	// int map[]=           //the map array. Edit to change level but keep the outer walls
-	// {
-	// 1,1,1,1,1,1,1,1,
-	// 1,0,1,0,0,0,0,1,
-	// 1,0,1,0,0,0,0,1,
-	// 1,0,1,0,0,0,0,1,
-	// 1,0,0,0,0,0,0,1,
-	// 1,0,0,0,0,1,0,1,
-	// 1,0,0,0,0,0,0,1,
-	// 1,1,1,1,1,1,1,1,	
-	// };
 	int map[]=
 	{
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -158,7 +91,6 @@ static void	draw_rays(t_cub *data)
 		else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
 		} 
   
-		// glColor3f(0,0.8,0);
 		if(disV<disH){ rx=vx; ry=vy; disH=disV;}    
 		print_r(data, data->p.x, data->p.y, rx, ry);              //horizontal hit first
     
@@ -187,8 +119,6 @@ void	rotate_camera(t_cub *data, int dir)
 		data->p.dx = cos(degToRad(data->p.pa));
 		data->p.dy = -sin(degToRad(data->p.pa));
 	}
-	print_map(data);
-	// print_ray(data);
 	draw_rays(data);
 }
 
@@ -202,8 +132,6 @@ void	movement(t_cub *data, int dir)
 		data->no->instances[0].x -= 32;
 	else if (dir == 4 && data->no->instances[0].x + 32 <= 1024 - 64)
 		data->no->instances[0].x += 32;
-	print_map(data);
-	print_ray(data);
 }
 
 void	events(struct mlx_key_data key, void *param)
@@ -248,11 +176,7 @@ void	init(t_cub *data)
 		ft_error("Error\nCould not load image!", data, NULL, 1);
 	
 	mlx_image_to_window(data->win, data->no, 512 - 16, 256 - 16);
-	print_map(data);
-	print_ray(data);
 
-
-	
 	mlx_key_hook(data->win, events, data);
 	mlx_loop(data->win);
 	mlx_terminate(data->win);

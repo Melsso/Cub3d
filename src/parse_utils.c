@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 16:54:23 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/12 17:42:53 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/15 18:56:43 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,21 +121,5 @@ void	get_paths(t_cub *data)
 			mat = ft_split(data->map[i], ' ');
 			get_colors(data, mat, i);
 		}
-	}
-}
-
-void	trim_input(t_cub *data)
-{
-	int		i;
-	char	*tmp;
-
-	i = -1;
-	while (data->map[++i])
-	{
-		tmp = data->map[i];
-		data->map[i] = ft_strtrim(tmp, " \t");
-		free(tmp);
-		if (!data->map[i])
-			ft_error("Error\nMalloc error!", data, NULL, 1);
 	}
 }

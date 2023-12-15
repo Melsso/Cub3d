@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 18:03:34 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/12 18:28:36 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/15 19:19:10 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ void	clean_map(t_cub *data)
 
 static int	is_inset(char c)
 {
-	if (c == '0' || c == '1' || c == 'N' || c == 'E' || c == 'S' || c == 'W')
+	if (c == '0' || c == '1' || c == 'N' || c == 'E' || c == 'S'
+		|| c == 'W' || c == ' ')
 		return (1);
 	return (0);
 }
@@ -51,21 +52,48 @@ static int	is_pos(char c)
 	return (0);
 }
 
+static int	valid_line(t_cub *data, int ind)
+{
+	char	*str;
+	int		i;
+	int		j;
+
+	i = 0;
+	str = data->map[ind];
+	while (str[i] && str[i] == ' ')
+		i++;
+	j = i;
+	if ((str[i] && str[i] != '1') || !str[i])
+		return (0);
+	else
+	{
+		i = ft_strlen(str) - 1;
+		while (i >= 0 && str[i] == ' ')
+			i--;
+		if (str[i] && str[i] != '1' || i == 0)
+			return (0);
+		else
+			return (1);
+	}
+}
+
 void	check_valid_map(t_cub *data)
 {
 	int	i;
 	int	j;
 	int	count;
 
-	i = -1;
+	i = 1;
 	count = 0;
 	while (data->map[++i])
 	{
 		j = -1;
 		while (data->map[i][++j])
 		{
-			if ((i == 0 || !data->map[i + 1] || j == 0 || j
-					== ft_strlen(data->map[i]) - 1) && data->map[i][j] != '1')
+			if ((i == 0 || !data->map[i + 1]) && data->map[i][j] != '1'
+				&& data->map[i][j] != ' ')
+				ft_error("Error\nMMap is not closed!", data, NULL, 1);
+			else if (!valid_line(data, i))
 				ft_error("Error\nMap is not closed!", data, NULL, 1);
 			if (!is_inset(data->map[i][j]))
 				ft_error("Error\nInvalid characters in map!", data, NULL, 1);
@@ -74,5 +102,5 @@ void	check_valid_map(t_cub *data)
 		}
 	}
 	if (count != 1)
-		ft_error("Error\nMultiple Initial positions!", data, NULL, 1);
+		ft_error("Error\nMultiple initial direction!", data, NULL, 1);
 }
