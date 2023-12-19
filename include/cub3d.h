@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 15:48:49 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/14 19:43:53 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/19 19:44:54 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@
 # include "../libft/libft.h"
 # include "../lib/MLX42/include/MLX42/MLX42.h"
 
+# define FOV 0.6
+# define ROT 0.02
+# define MV 0.02
+
 typedef struct s_vec3 t_vec3;
 typedef struct s_vec3
 {
@@ -36,15 +40,18 @@ typedef struct s_vec3
 	int	z;
 } t_vec3;
 
-typedef struct	s_pl t_pl;
-typedef struct	s_pl
+typedef struct s_vec2 t_vec2;
+typedef struct s_vec2
 {
 	int	x;
 	int	y;
-	float	dx;
-	float	dy;
-	float	pa;
-} t_pl;
+} t_vec2;
+
+typedef struct s_ray t_ray;
+typedef struct s_ray
+{
+	// we'll see
+}
 
 typedef struct s_cub	t_cub;
 typedef struct s_cub
@@ -55,16 +62,13 @@ typedef struct s_cub
 	char		*eap;
 	char		*wep;
 	mlx_t		*win;
-	mlx_image_t	*no;
-	mlx_image_t	*so;
-	mlx_image_t	*ea;
-	mlx_image_t	*we;
-	mlx_image_t	*c;
-	mlx_image_t	*f;
+	mlx_image_t	*img;
+	mlx_texture_t	*text[4];
 	t_vec3		f_col;
 	t_vec3		c_col;
-	t_pl		p;
-	int			cam_dir;
+	t_vec2		vecs[3]; // 0 == pos, 1 == dir, 2 == cam;
+	int			h;
+	int			w;
 }	t_cub;
 
 void	free_split(char **mat);
