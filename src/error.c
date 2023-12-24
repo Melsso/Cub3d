@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:09:17 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/12 17:24:33 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/24 14:11:35 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,8 @@ void	ft_error(char *msg, t_cub *data, char **mat, int flag)
 {
 	if (flag)
 	{
-		if (data->nop)
-			free(data->nop);
-		if (data->sop)
-			free(data->sop);
-		if (data->wep)
-			free(data->wep);
-		if (data->eap)
-			free(data->eap);
+		// free struct
+		;
 	}
 	if (msg)
 		printf("%s\n", msg);

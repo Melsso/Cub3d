@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:00:26 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/15 19:04:18 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/24 14:28:46 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,11 @@ void	copy_map(t_cub *data, char **map)
 	i = 5;
 	j = 0;
 	while (data->map[++i])
-		map[j++] = data->map[i];
+	{
+		map[j] = ft_strdup(data->map[i]);
+		if (!map[j++])
+			ft_error("Error\nMalloc error!", data, map, 1);
+	}
 	map[j] = NULL;
 	free_split(data->map);
 	data->map = map;

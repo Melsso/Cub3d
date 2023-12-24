@@ -6,16 +6,17 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 15:48:49 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/19 19:44:54 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/24 17:06:01 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
-# endif
+# define BUFFER_SIZE 1
+# define FOV 0.66
+# define ROT 0.02
+# define MV 0.02
 
 # include <math.h>
 # include <fcntl.h>
@@ -28,47 +29,50 @@
 # include "../libft/libft.h"
 # include "../lib/MLX42/include/MLX42/MLX42.h"
 
-# define FOV 0.6
-# define ROT 0.02
-# define MV 0.02
 
-typedef struct s_vec3 t_vec3;
 typedef struct s_vec3
 {
-	int	x;
-	int	y;
-	int	z;
+	unsigned short	x;
+	unsigned short	y;
+	unsigned short	z;
 } t_vec3;
 
-typedef struct s_vec2 t_vec2;
 typedef struct s_vec2
 {
-	int	x;
-	int	y;
+	double	x;
+	double	y;
 } t_vec2;
 
-typedef struct s_ray t_ray;
 typedef struct s_ray
 {
-	// we'll see
-}
+	double	distance;
+	int		hit;
+	char	axis;
+	t_vec2	dir;
+	t_vec2	pos;
+} t_ray;
 
-typedef struct s_cub	t_cub;
+typedef struct s_texture
+{
+	int		line_height;
+	int		start;
+	int		end;
+	double	wall_x;
+	double	step;
+	int		pxl[2];
+	double	pos;
+}	t_texture;
+
 typedef struct s_cub
 {
-	char		**map;
-	char		*nop;
-	char		*sop;
-	char		*eap;
-	char		*wep;
-	mlx_t		*win;
-	mlx_image_t	*img;
-	mlx_texture_t	*text[4];
-	t_vec3		f_col;
-	t_vec3		c_col;
-	t_vec2		vecs[3]; // 0 == pos, 1 == dir, 2 == cam;
-	int			h;
-	int			w;
+	t_vec3			cols[2];
+	t_vec2			vecs[3]; // 0 == pos, 1 == dir, 2 == cam;
+	int				h;
+	int				w;
+	char			**map;
+	mlx_t			*win;
+	mlx_texture_t	*tex[4];
+	mlx_image_t		*img;
 }	t_cub;
 
 void	free_split(char **mat);
@@ -84,20 +88,24 @@ char	*get_next_line(int fd);
 void	read_content(t_cub *data, char **argv);
 char	*read_stuff(t_cub *data, int fd);
 void	check_contents(char *line, t_cub *data);
-void	trim_input(t_cub *data);
 void	get_paths(t_cub *data);
 void	clean_map(t_cub *data);
 void	copy_map(t_cub *data, char **map);
 void	check_valid_map(t_cub *data);
 
+void	get_data(t_cub *data);
+void	set_vec(char c, t_cub *data);
 void	init(t_cub *data);
-void	load_images(t_cub *data);
-void	events(struct mlx_key_data key, void *param);
+
+
+void	events(void *param);
 void	movement(t_cub *var, int dir);
 void	rotate_camera(t_cub *data, int dir);
 
 //////utils/////
-float	degToRad(int a);
-int 	fixAng(int a);
+
+int		is_pos(char c);
+int32_t	col(int32_t r, int32_t g, int32_t b);
+
 
 #endif

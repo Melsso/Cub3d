@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 18:03:34 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/15 19:19:10 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/24 14:00:09 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int	is_inset(char c)
 	return (0);
 }
 
-static int	is_pos(char c)
+int	is_pos(char c)
 {
 	if (c == 'N' || c == 'E' || c == 'S' || c == 'W')
 		return (1);

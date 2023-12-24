@@ -6,30 +6,33 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 16:54:23 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/15 18:56:43 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/24 17:03:49 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
+static void	load_tex(t_cub *data, char **mat, int ind)
+{
+	data->tex[ind] = mlx_load_png(mat[1]);
+	if (!data->tex[ind])
+		ft_error("Error\nMlx_load_png failure!", data, mat, 1);
+}
+
 static void	check_line(t_cub *data, char **mat, char *str)
 {
-	char	*path;
 
 	if (mat[0] && !ft_strncmp(mat[0], str, ft_strlen(mat[0])) && mat[1]
 		&& !mat[2])
 	{
-		path = ft_strdup(mat[1]);
-		if (!path)
-			ft_error("Error\nMalloc error!", data, mat, 1);
 		if (!ft_strncmp(str, "NO", 2))
-			data->nop = path;
+			load_tex(data, mat, 0);
 		if (!ft_strncmp(str, "SO", 2))
-			data->sop = path;
+			load_tex(data, mat, 1);
 		if (!ft_strncmp(str, "EA", 2))
-			data->eap = path;
+			load_tex(data, mat, 3);
 		if (!ft_strncmp(str, "WE", 2))
-			data->wep = path;
+			load_tex(data, mat, 2);
 		free_split(mat);
 		free(str);
 	}
@@ -82,11 +85,12 @@ static void	get_colors(t_cub *data, char **mat, int ind)
 			ft_error("Error\nMalloc error!", data, mat, 1);
 		if (check_colors(data, mat, m))
 		{
-			vec = (t_vec3){ft_atoi(m[0]), ft_atoi(m[1]), ft_atoi(m[2])};
+			vec = (t_vec3){(unsigned short)ft_atoi(m[0]),
+				(unsigned short)ft_atoi(m[1]), (unsigned short)ft_atoi(m[2])};
 			if (data->map[ind][0] == 'F')
-				data->f_col = vec;
+				data->cols[0] = vec;
 			else
-				data->c_col = vec;
+				data->cols[1] = vec;
 		}
 		free_split(mat);
 		free_split(m);
