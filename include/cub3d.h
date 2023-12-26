@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 15:48:49 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/24 17:06:01 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/26 15:14:25 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # define BUFFER_SIZE 1
 # define FOV 0.66
 # define ROT 0.02
-# define MV 0.02
+# define MV 0.04
 
 # include <math.h>
 # include <fcntl.h>
@@ -29,19 +29,20 @@
 # include "../libft/libft.h"
 # include "../lib/MLX42/include/MLX42/MLX42.h"
 
-
 typedef struct s_vec3
 {
 	unsigned short	x;
 	unsigned short	y;
 	unsigned short	z;
-} t_vec3;
+}	t_vec3;
 
 typedef struct s_vec2
 {
 	double	x;
 	double	y;
-} t_vec2;
+	int		xi;
+	int		yi;
+}	t_vec2;
 
 typedef struct s_ray
 {
@@ -50,23 +51,12 @@ typedef struct s_ray
 	char	axis;
 	t_vec2	dir;
 	t_vec2	pos;
-} t_ray;
-
-typedef struct s_texture
-{
-	int		line_height;
-	int		start;
-	int		end;
-	double	wall_x;
-	double	step;
-	int		pxl[2];
-	double	pos;
-}	t_texture;
+}	t_ray;
 
 typedef struct s_cub
 {
 	t_vec3			cols[2];
-	t_vec2			vecs[3]; // 0 == pos, 1 == dir, 2 == cam;
+	t_vec2			vecs[3];
 	int				h;
 	int				w;
 	char			**map;
@@ -78,7 +68,6 @@ typedef struct s_cub
 void	free_split(char **mat);
 void	ft_error(char *msg, t_cub *data, char **mat, int flag);
 void	call_err(char *msg, t_cub *data, char **mat, char **m);
-
 
 char	*ft_get_buffer(char *str);
 char	*free_all(char *str, char *buffer);
@@ -96,7 +85,15 @@ void	check_valid_map(t_cub *data);
 void	get_data(t_cub *data);
 void	set_vec(char c, t_cub *data);
 void	init(t_cub *data);
+void	paint(t_cub *data);
 
+void	raycast(t_cub *data, t_ray *ray);
+void	get_info(t_cub *data, t_ray *ray, short x, t_vec2 *dist);
+void	fix_ray(t_cub *data, t_ray *ray, t_vec2 (*vecs)[3], t_vec2 *dist);
+void	launch_ray(t_cub *data, t_ray *ray, t_vec2 *dist, t_vec2 (*vecs)[3]);
+
+void	get_tex_info(t_vec2 (*v)[3], t_ray *ray, t_cub *data);
+void	render_walls(t_ray *ray, short x, t_cub *data);
 
 void	events(void *param);
 void	movement(t_cub *var, int dir);
@@ -106,6 +103,5 @@ void	rotate_camera(t_cub *data, int dir);
 
 int		is_pos(char c);
 int32_t	col(int32_t r, int32_t g, int32_t b);
-
 
 #endif

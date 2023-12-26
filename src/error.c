@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:09:17 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/24 14:11:35 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/26 13:11:19 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,17 @@ void	call_err(char *msg, t_cub *data, char **mat, char **m)
 
 void	ft_error(char *msg, t_cub *data, char **mat, int flag)
 {
+	int	i;
+
 	if (flag)
 	{
-		// free struct
-		;
+		i = -1;
+		while (++i < 4)
+			if (data->tex[i])
+				mlx_delete_texture(data->tex[i]);
+		if (data->img)
+			mlx_delete_image(data->win, data->img);
+		mlx_terminate(data->win);
 	}
 	if (msg)
 		printf("%s\n", msg);

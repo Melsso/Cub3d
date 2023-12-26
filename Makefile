@@ -17,6 +17,7 @@ SRC		:=	main.c \
 			parse_utils2.c \
 			render.c \
 			render_utils.c \
+			render_utils2.c \
 			utils.c \
 			error.c \
 

@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 16:54:23 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/24 17:03:49 by smallem          ###   ########.fr       */
+/*   Updated: 2023/12/26 13:17:32 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ static void	load_tex(t_cub *data, char **mat, int ind)
 
 static void	check_line(t_cub *data, char **mat, char *str)
 {
-
 	if (mat[0] && !ft_strncmp(mat[0], str, ft_strlen(mat[0])) && mat[1]
 		&& !mat[2])
 	{
@@ -92,8 +91,7 @@ static void	get_colors(t_cub *data, char **mat, int ind)
 			else
 				data->cols[1] = vec;
 		}
-		free_split(mat);
-		free_split(m);
+		return (free_split(mat), free_split(m));
 	}
 	else
 		ft_error("Error\nBad color format!", data, mat, 1);
