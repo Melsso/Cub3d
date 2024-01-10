@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:47:30 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/26 15:11:28 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/10 16:35:27 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ void	set_vec(char c, t_cub *data)
 		sign *= -1;
 	if (c == 'N' || c == 'S')
 	{
-		data->vecs[1] = (t_vec2){0, 1 * -sign, 0, 0};
-		data->vecs[2] = (t_vec2){FOV * sign, 0, 0, 0};
+		data->vecs[1] = (t_vec2){0, 1 * -sign};
+		data->vecs[2] = (t_vec2){FOV * sign, 0};
 	}
 	else
 	{
-		data->vecs[1] = (t_vec2){-1 * sign, 0, 0, 0};
-		data->vecs[2] = (t_vec2){0, FOV * -sign, 0, 0};
+		data->vecs[1] = (t_vec2){-1 * sign, 0};
+		data->vecs[2] = (t_vec2){0, FOV * -sign};
 	}
 }
 
@@ -61,45 +61,44 @@ void	init(t_cub *data)
 {
 	get_data(data);
 	data->win = NULL;
-	data->win = mlx_init(1920, 1080, "Cub3d", false);
+	data->win = mlx_init(WIDTH, HEIGHT, "Cub3d", false);
 	if (!data->win)
 		ft_error("Error\nMlx_init failure!", data, NULL, 1);
-	data->img = mlx_new_image(data->win, 1920, 1080);
+	data->img = mlx_new_image(data->win, WIDTH, HEIGHT);
 	if (!data->img)
 		ft_error("Error\nCould not create image!", data, NULL, 1);
 	if (mlx_image_to_window(data->win, data->img, 0, 0) == -1)
 		ft_error("Error\nImg2Win mlx failure!", data, NULL, 1);
 }
 
-void	rotate_camera(t_cub *data, int dir)
+int	rotate_camera(t_vec2 *vecs, short dir)
 {
-	short	sign;
-	t_vec2	ang;
+	double	cos_a;
+	double	sin_a;
 
-	if (dir == 2)
-		sign = -1;
-	else
-		sign = 1;
-	ang = (t_vec2){cos(ROT * sign), sin(ROT * sign), 0, 0};
-	data->vecs[1].x = (data->vecs[1].x * ang.x) - (data->vecs[1].y * ang.y);
-	data->vecs[1].y = (data->vecs[1].x * ang.y) + (data->vecs[1].y * ang.x);
-	data->vecs[2].x = (data->vecs[2].x * ang.x) - (data->vecs[2].y * ang.y);
-	data->vecs[2].y = (data->vecs[2].x * ang.y) + (data->vecs[2].y * ang.x);
+	cos_a = cos(dir * ROT);
+	sin_a = sin(dir * ROT);
+	vecs[1].x = (vecs[1].x * cos_a) - (vecs[1].y * sin_a);
+	vecs[1].y = (vecs[1].x * sin_a) + (vecs[1].y * cos_a);
+	vecs[2].x = (vecs[2].x * cos_a) - (vecs[2].y * sin_a);
+	vecs[2].y = (vecs[2].x * sin_a) + (vecs[2].y * cos_a);
+	return (1);
 }
 
-void	movement(t_cub *data, int dir)
+int	movement(t_vec2 *vecs, char **map, int dir)
 {
 	t_vec2	v;
 	t_vec2	p;
 
-	p = (t_vec2){data->vecs[0].x, data->vecs[0].y};
-	v = (t_vec2){data->vecs[1].x * MV, data->vecs[1].y * MV, 0, 0};
-	if (dir == 1 && data->map[(int)(p.y + v.y)][(int)(p.x + v.x)] != '1')
-		data->vecs[0] = (t_vec2){p.x + v.x, p.y + v.y};
-	else if (dir == 2 && data->map[(int)(p.y - v.y)][(int)(p.x - v.x)] != '1')
-		data->vecs[0] = (t_vec2){p.x - v.x, p.y - v.y};
-	else if (dir == 3 && data->map[(int)(p.y - v.x)][(int)(p.x + v.y)] != '1')
-		data->vecs[0] = (t_vec2){p.x + v.y, p.y - v.x};
-	else if (dir == 4 && data->map[(int)(p.y + v.x)][(int)(p.x - v.y)] != '1')
-		data->vecs[0] = (t_vec2){p.x - v.y, p.y + v.x};
+	p = (t_vec2){vecs[0].x, vecs[0].y};
+	v = (t_vec2){vecs[1].x * MV, vecs[1].y * MV};
+	if (dir == 1 && map[(int)(p.y + v.y)][(int)(p.x + v.x)] != '1')
+		vecs[0] = (t_vec2){p.x + v.x, p.y + v.y};
+	else if (dir == 2 && map[(int)(p.y - v.y)][(int)(p.x - v.x)] != '1')
+		vecs[0] = (t_vec2){p.x - v.x, p.y - v.y};
+	else if (dir == 3 && map[(int)(p.y - v.x)][(int)(p.x + v.y)] != '1')
+		vecs[0] = (t_vec2){p.x + v.y, p.y - v.x};
+	else if (dir == 4 && map[(int)(p.y + v.x)][(int)(p.x - v.y)] != '1')
+		vecs[0] = (t_vec2){p.x - v.y, p.y + v.x};
+	return (1);
 }

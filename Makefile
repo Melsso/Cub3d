@@ -19,7 +19,6 @@ SRC		:=	main.c \
 			render_utils.c \
 			render_utils2.c \
 			utils.c \
-			error.c \
 
 SRCS = $(addprefix $(SRC_DIR), $(SRC))
 OBJ = $(SRC:.c=.o)

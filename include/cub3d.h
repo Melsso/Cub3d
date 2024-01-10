@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 15:48:49 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/26 15:14:25 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/10 16:43:38 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@
 # define BUFFER_SIZE 1
 # define FOV 0.66
 # define ROT 0.02
-# define MV 0.04
+# define MV 0.02
+# define WIDTH 1200
+# define HEIGHT 1200
 
 # include <math.h>
 # include <fcntl.h>
@@ -40,9 +42,13 @@ typedef struct s_vec2
 {
 	double	x;
 	double	y;
-	int		xi;
-	int		yi;
 }	t_vec2;
+
+typedef struct s_vec
+{
+	int	x;
+	int	y;
+}	t_vec;
 
 typedef struct s_ray
 {
@@ -50,7 +56,7 @@ typedef struct s_ray
 	int		hit;
 	char	axis;
 	t_vec2	dir;
-	t_vec2	pos;
+	t_vec	pos;
 }	t_ray;
 
 typedef struct s_cub
@@ -85,19 +91,21 @@ void	check_valid_map(t_cub *data);
 void	get_data(t_cub *data);
 void	set_vec(char c, t_cub *data);
 void	init(t_cub *data);
-void	paint(t_cub *data);
+void	paint(mlx_image_t *img, t_vec3 *cols);
 
 void	raycast(t_cub *data, t_ray *ray);
 void	get_info(t_cub *data, t_ray *ray, short x, t_vec2 *dist);
-void	fix_ray(t_cub *data, t_ray *ray, t_vec2 (*vecs)[3], t_vec2 *dist);
-void	launch_ray(t_cub *data, t_ray *ray, t_vec2 *dist, t_vec2 (*vecs)[3]);
+void	fix_ray(t_vec2 *v, t_ray *ray, t_vec2 *vecs, t_vec *vec);
+void	launch_ray(char **map, t_ray *ray, t_vec2 *vecs, t_vec *vec);
 
-void	get_tex_info(t_vec2 (*v)[3], t_ray *ray, t_cub *data);
+// void	get_tex_info(t_vec2 (*v)[3], t_ray *ray, t_cub *data);
+// void	get_tex_info(t_vec2 *v, t_vec (*ve)[2],t_ray *ray, t_cub *data);
+
 void	render_walls(t_ray *ray, short x, t_cub *data);
 
 void	events(void *param);
-void	movement(t_cub *var, int dir);
-void	rotate_camera(t_cub *data, int dir);
+int		movement(t_vec2 *vecs, char **map, int dir);
+int		rotate_camera(t_vec2 *vecs, short dir);
 
 //////utils/////
 

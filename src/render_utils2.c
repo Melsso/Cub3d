@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/26 13:05:06 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/26 15:08:53 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/10 16:49:55 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,108 +18,109 @@ void	get_info(t_cub *data, t_ray *ray, short x, t_vec2 *dist)
 
 	cam_x = (2 * x / (double)data->img->width - 1);
 	ray->dir = (t_vec2){data->vecs[1].x + (data->vecs[2].x * cam_x),
-		data->vecs[1].y + (data->vecs[2].y * cam_x), 0, 0};
+		data->vecs[1].y + (data->vecs[2].y * cam_x)};
 	if (ray->dir.x)
-		dist->x = fabs(1 / ray->dir.x);
+		dist->x = fabs(1.0 / ray->dir.x);
 	else
 		dist->x = INFINITY;
 	if (ray->dir.y)
-		dist->y = fabs(1 / ray->dir.y);
+		dist->y = fabs(1.0 / ray->dir.y);
 	else
 		dist->y = INFINITY;
-	ray->pos = (t_vec2){0, 0, data->vecs[0].x, data->vecs[0].y};
+	ray->pos = (t_vec){data->vecs[0].x, data->vecs[0].y};
 }
 
-void	fix_ray(t_cub *data, t_ray *ray, t_vec2 (*vecs)[3], t_vec2 *dist)
+void	fix_ray(t_vec2 *v, t_ray *ray, t_vec2 *vecs, t_vec *vec)
 {
+	if (ray->dir.x < 0)
+	{
+		vec[0].x = -1;
+		vecs[1].x = (v[0].x - ray->pos.x) * vecs[0].x;
+		vec[1].x = 3;
+	}
+	else
+	{
+		vec[0].x = 1;
+		vecs[1].x = (ray->pos.x + 1.0 - v[0].x) * vecs[0].x;
+		vec[1].x = 2;
+	}
 	if (ray->dir.y < 0)
 	{
-		vecs[0][0].yi = -1;
-		vecs[0][1].y = (data->vecs[0].y - ray->pos.yi) * dist->y;
-		vecs[0][2].yi = 0;
+		vec[0].y = -1;
+		vecs[1].y = (v[0].y - ray->pos.y) * vecs[0].y;
+		vec[1].y = 0;
 	}
 	else
 	{
-		vecs[0][0].yi = 1;
-		vecs[0][1].y = (ray->pos.yi + 1.0 - data->vecs[0].y) * dist->y;
-		vecs[0][2].yi = 1;
-	}
-	if (ray->dir.x >= 0)
-	{
-		vecs[0][0].xi = 1;
-		vecs[0][1].x = (ray->pos.xi + 1.0 - data->vecs[0].x) * dist->x;
-		vecs[0][2].xi = 2;
-	}
-	else
-	{
-		vecs[0][0].xi = -1;
-		vecs[0][1].x = (data->vecs[0].x - ray->pos.xi) * dist->x;
-		vecs[0][2].xi = 3;
+		vec[0].y = 1;
+		vecs[1].y = (ray->pos.y + 1.0 - v[0].y) * vecs[0].y;
+		vec[1].y = 1;
 	}
 }
 
-void	launch_ray(t_cub *data, t_ray *ray, t_vec2 *dist, t_vec2 (*vecs)[3])
+void	launch_ray(char **map, t_ray *ray, t_vec2 *vecs, t_vec *vec)
 {
 	while (1)
 	{
-		if (vecs[0][1].x < vecs[0][1].y)
+		if (vecs[1].x < vecs[1].y)
 		{
-			vecs[0][1].x += dist->x;
-			ray->pos.xi += vecs[0][0].xi;
+			vecs[1].x += vecs[0].x;
+			ray->pos.x += vec[0].x;
 			ray->axis = 'X';
 		}
 		else
 		{
-			vecs[0][1].y += dist->y;
-			ray->pos.yi += vecs[0][0].yi;
+			vecs[1].y += vecs[0].y;
+			ray->pos.y += vec[0].y;
 			ray->axis = 'Y';
 		}
-		if (data->map[ray->pos.yi][ray->pos.xi] == '1')
+		if (map[ray->pos.y][ray->pos.x] == '1')
 			break ;
 	}
 }
 
-void	get_tex_info(t_vec2 (*v)[3], t_ray *ray, t_cub *data)
+static void	get_tex_info(t_vec2 *v, t_vec *ve, t_ray *ray, t_cub *data)
 {
 	int			l_h;
 	double		wx;
-	uint32_t	h;
 	char		c;
 
-	h = data->img->height;
-	l_h = (h) / ray->distance;
+	l_h = (data->img->height) / ray->distance;
 	c = ray->axis;
-	v[0][0] = (t_vec2){0, 0, (h / 2) - (l_h / 2), (h / 2) + (l_h / 2)};
-	if (v[0][0].xi < 0)
-		v[0][0].xi = 0;
-	if (v[0][0].yi >= (int)h)
-		v[0][0].yi = h - 1;
+	ve[0].x = (HEIGHT / 2) - (l_h / 2);
+	ve[0].y = (HEIGHT / 2) + (l_h / 2);
+	if (ve[0].x < 0)
+		ve[0].x = 0;
+	if (ve[0].y >= (int)HEIGHT)
+		ve[0].y = HEIGHT - 1;
 	if (c == 'X')
 		wx = data->vecs[0].y + (ray->distance * ray->dir.y);
 	else
 		wx = data->vecs[0].x + (ray->distance * ray->dir.x);
 	wx -= floor(wx);
-	v[0][2].xi = (int)(wx * (double)data->tex[ray->hit]->width);
+	ve[1].x = (int)(wx * (double)data->tex[ray->hit]->width);
 	if ((c == 'X' && ray->dir.x > 0) || (c == 'Y' && ray->dir.y < 0))
-		v[0][2].xi = data->tex[ray->hit]->width - v[0][2].xi - 1;
-	v[0][1].y = (double)(data->tex[ray->hit]->height) / l_h;
-	v[0][1].x = (v[0][0].xi - (h / 2) + (l_h / 2)) * v[0][1].y;
+		ve[1].x = data->tex[ray->hit]->width - ve[1].x - 1;
+	v->y = (double)(data->tex[ray->hit]->height) / l_h;
+	v->x = (ve[0].x - (HEIGHT / 2) + (l_h / 2)) * v->y;
 }
 
 void	render_walls(t_ray *ray, short x, t_cub *data)
 {
-	t_vec2			v[3];
+	t_vec			ve[2];
+	t_vec2			v;
 	int32_t			pxl;
+	mlx_texture_t	*tex;
 
-	get_tex_info(&v, ray, data);
-	while (v[0].xi < v[0].yi)
+	get_tex_info(&v, ve, ray, data);
+	tex = data->tex[ray->hit];
+	while (ve[0].x < ve[0].y)
 	{
-		v[2].yi = v[1].x;
-		pxl = (v[2].yi * data->tex[ray->hit]->width + v[2].xi) * 4;
-		mlx_put_pixel(data->img, x, v[0].xi, col(data->tex[ray->hit]->pixels[pxl
-				+ 0], data->tex[ray->hit]->pixels[pxl + 1],
-				data->tex[ray->hit]->pixels[pxl + 2]));
-		v[1].x += v[1].y;
-		v[0].xi++;
+		ve[1].y = v.x;
+		pxl = (ve[1].y * tex->width + ve[1].x) * 4;
+		mlx_put_pixel(data->img, x, ve[0].x, col(tex->pixels[pxl + 0],
+				tex->pixels[pxl + 1], tex->pixels[pxl + 2]));
+		v.x += v.y;
+		ve[0].x++;
 	}
 }
