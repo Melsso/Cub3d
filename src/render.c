@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 13:53:55 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/10 16:51:34 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/11 13:10:32 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,4 +85,9 @@ void	events(void *param)
 		paint(data->img, data->cols);
 		raycast(data, &ray);
 	}
+}
+
+int32_t	col(int32_t r, int32_t g, int32_t b)
+{
+	return (r << 24 | g << 16 | b << 8 | 0x000000FF);
 }

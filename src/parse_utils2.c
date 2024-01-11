@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 18:03:34 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/24 14:00:09 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/11 14:10:19 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,23 +31,15 @@ void	clean_map(t_cub *data)
 		if (i == 5 && j != 6)
 			ft_error("Error\nInput data format not respected!", data, NULL, 1);
 	}
-	map = (char **)malloc(sizeof(char *) * (i - 6 + 1));
-	if (!map)
-		ft_error("Error\nMalloc error!", data, NULL, 1);
-	copy_map(data, map);
+	map = copy_map(data, i - 6 + 1);
+	free_split(data->map);
+	data->map = map;
 }
 
 static int	is_inset(char c)
 {
 	if (c == '0' || c == '1' || c == 'N' || c == 'E' || c == 'S'
 		|| c == 'W' || c == ' ')
-		return (1);
-	return (0);
-}
-
-int	is_pos(char c)
-{
-	if (c == 'N' || c == 'E' || c == 'S' || c == 'W')
 		return (1);
 	return (0);
 }
@@ -79,28 +71,50 @@ static int	valid_line(t_cub *data, int ind)
 
 void	check_valid_map(t_cub *data)
 {
-	int	i;
-	int	j;
-	int	count;
+	int		arr[3];
+	t_vec3	vec;
+	char	**m;
 
-	i = 1;
-	count = 0;
-	while (data->map[++i])
+	arr[0] = 1;
+	arr[2] = 0;
+	while (data->map[++arr[0]])
 	{
-		j = -1;
-		while (data->map[i][++j])
+		arr[1] = -1;
+		while (data->map[arr[0]][++arr[1]])
 		{
-			if ((i == 0 || !data->map[i + 1]) && data->map[i][j] != '1'
-				&& data->map[i][j] != ' ')
-				ft_error("Error\nMMap is not closed!", data, NULL, 1);
-			else if (!valid_line(data, i))
-				ft_error("Error\nMap is not closed!", data, NULL, 1);
-			if (!is_inset(data->map[i][j]))
+			if (!is_inset(data->map[arr[0]][arr[1]]))
 				ft_error("Error\nInvalid characters in map!", data, NULL, 1);
-			if (is_pos(data->map[i][j]))
-				count++;
+			if (is_pos(data->map[arr[0]][arr[1]]))
+				vec = (t_vec3){arr[0], arr[1], arr[2]++};
 		}
 	}
-	if (count != 1)
-		ft_error("Error\nMultiple initial direction!", data, NULL, 1);
+	m = cp_map(data);
+	if (arr[2] != 1)
+		ft_error("Error\nMultiple/No initial direction!", data, m, 1);
+	else
+		rec_valid(m, data, (t_vec){vec.x, vec.y}, 0);
+	free_split(m);
+}
+
+int	rec_valid(char **map, t_cub *data, t_vec v, int flag)
+{
+	if ((v.x < 0 || v.y < 0 || !map[v.x] || v.y >= ft_strlen(map[v.x])
+		|| !map[v.x][v.y]) && flag)
+		ft_error("Error\nMap not closed properly", data, map, 0);
+	if (v.x < 0 || v.y < 0 || !map[v.x] || v.y >= ft_strlen(map[v.x])
+		|| !map[v.x][v.y])
+		return (0);
+	if (map[v.x][v.y] == '1' || map[v.x][v.y] == 'V')
+		return (0);
+	if (map[v.x][v.y] == ' ')
+		ft_error("Error\nMap not closed properly", data, map, 0);
+	if (map[v.x][v.y] == '0' || is_pos(map[v.x][v.y]))
+	{
+		map[v.x][v.y] = 'V';
+		rec_valid(map, data, (t_vec){v.x + 1, v.y}, 1);
+		rec_valid(map, data, (t_vec){v.x, v.y + 1}, 1);
+		rec_valid(map, data, (t_vec){v.x - 1, v.y}, 1);
+		rec_valid(map, data, (t_vec){v.x, v.y - 1}, 1);
+	}
+	return (0);
 }

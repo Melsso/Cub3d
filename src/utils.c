@@ -6,15 +6,39 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 18:10:47 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/10 16:55:29 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/11 13:10:49 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
-int32_t	col(int32_t r, int32_t g, int32_t b)
+char	**cp_map(t_cub *data)
 {
-	return (r << 24 | g << 16 | b << 8 | 0x000000FF);
+	int		i;
+	char	**map;
+
+	i = -1;
+	while (data->map[++i])
+		;
+	map = (char **)malloc(sizeof(char *) * i);
+	if (!map)
+		ft_error("Error\nMalloc error!", data, NULL, 0);
+	i = -1;
+	while (data->map[++i])
+	{
+		map[i] = ft_strdup(data->map[i]);
+		if (!map[i])
+			ft_error("Error\nMalloc error!", data, map, 0);
+	}
+	map[i] = NULL;
+	return (map);
+}
+
+int	is_pos(char c)
+{
+	if (c == 'N' || c == 'E' || c == 'S' || c == 'W')
+		return (1);
+	return (0);
 }
 
 void	free_split(char **mat)

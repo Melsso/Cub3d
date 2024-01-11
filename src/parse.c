@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:00:26 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/24 14:28:46 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/11 12:54:47 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,16 @@ char	*read_stuff(t_cub *data, int fd)
 	return (line);
 }
 
-void	copy_map(t_cub *data, char **map)
+char	**copy_map(t_cub *data, int size)
 {
 	int		i;
 	int		j;
 	char	*line;
+	char	**map;
 
+	map = (char **)malloc(sizeof(char *) * size);
+	if (!map)
+		ft_error("Error\nMalloc error!", data, NULL, 0);
 	i = 5;
 	j = 0;
 	while (data->map[++i])
@@ -79,8 +83,7 @@ void	copy_map(t_cub *data, char **map)
 			ft_error("Error\nMalloc error!", data, map, 1);
 	}
 	map[j] = NULL;
-	free_split(data->map);
-	data->map = map;
+	return (map);
 }
 
 void	read_content(t_cub *data, char **argv)
