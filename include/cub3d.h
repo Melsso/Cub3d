@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 15:48:49 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/11 13:24:54 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/16 17:11:45 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 # define FOV 0.66
 # define ROT 0.02
 # define MV 0.02
-# define WIDTH 1200
-# define HEIGHT 1200
+# define WIDTH 1920
+# define HEIGHT 1080
 
 # include <math.h>
 # include <fcntl.h>
@@ -52,19 +52,17 @@ typedef struct s_vec
 
 typedef struct s_ray
 {
+	t_vec2	dir;
+	t_vec	pos;
 	double	distance;
 	int		hit;
 	char	axis;
-	t_vec2	dir;
-	t_vec	pos;
 }	t_ray;
 
 typedef struct s_cub
 {
 	t_vec3			cols[2];
 	t_vec2			vecs[3];
-	int				h;
-	int				w;
 	char			**map;
 	mlx_t			*win;
 	mlx_texture_t	*tex[4];
@@ -81,7 +79,7 @@ char	*ft_read(char *str, int fd, ssize_t bytes_read);
 char	*get_next_line(int fd);
 
 void	read_content(t_cub *data, char **argv);
-char	*read_stuff(t_cub *data, int fd);
+char	*read_stuff(int fd);
 void	check_contents(char *line, t_cub *data);
 void	get_paths(t_cub *data);
 void	clean_map(t_cub *data);
@@ -98,10 +96,7 @@ int32_t	col(int32_t r, int32_t g, int32_t b);
 void	raycast(t_cub *data, t_ray *ray);
 void	get_info(t_cub *data, t_ray *ray, short x, t_vec2 *dist);
 void	fix_ray(t_vec2 *v, t_ray *ray, t_vec2 *vecs, t_vec *vec);
-void	launch_ray(char **map, t_ray *ray, t_vec2 *vecs, t_vec *vec);
-
-// void	get_tex_info(t_vec2 (*v)[3], t_ray *ray, t_cub *data);
-// void	get_tex_info(t_vec2 *v, t_vec (*ve)[2],t_ray *ray, t_cub *data);
+void	launch_ray(char **map, t_ray *ray, t_vec2 *vecs, t_vec vec);
 
 void	render_walls(t_ray *ray, short x, t_cub *data);
 

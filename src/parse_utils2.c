@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 18:03:34 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/11 14:10:19 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/16 11:48:08 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	clean_map(t_cub *data)
 {
 	int		i;
 	int		j;
-	char	*line;
 	char	**map;
 
 	i = -1;
@@ -42,31 +41,6 @@ static int	is_inset(char c)
 		|| c == 'W' || c == ' ')
 		return (1);
 	return (0);
-}
-
-static int	valid_line(t_cub *data, int ind)
-{
-	char	*str;
-	int		i;
-	int		j;
-
-	i = 0;
-	str = data->map[ind];
-	while (str[i] && str[i] == ' ')
-		i++;
-	j = i;
-	if ((str[i] && str[i] != '1') || !str[i])
-		return (0);
-	else
-	{
-		i = ft_strlen(str) - 1;
-		while (i >= 0 && str[i] == ' ')
-			i--;
-		if (str[i] && str[i] != '1' || i == 0)
-			return (0);
-		else
-			return (1);
-	}
 }
 
 void	check_valid_map(t_cub *data)
@@ -98,10 +72,10 @@ void	check_valid_map(t_cub *data)
 
 int	rec_valid(char **map, t_cub *data, t_vec v, int flag)
 {
-	if ((v.x < 0 || v.y < 0 || !map[v.x] || v.y >= ft_strlen(map[v.x])
-		|| !map[v.x][v.y]) && flag)
+	if ((v.x < 0 || v.y < 0 || !map[v.x] || v.y >= (int)ft_strlen(map[v.x])
+			|| !map[v.x][v.y]) && flag)
 		ft_error("Error\nMap not closed properly", data, map, 0);
-	if (v.x < 0 || v.y < 0 || !map[v.x] || v.y >= ft_strlen(map[v.x])
+	if (v.x < 0 || v.y < 0 || !map[v.x] || v.y >= (int)ft_strlen(map[v.x])
 		|| !map[v.x][v.y])
 		return (0);
 	if (map[v.x][v.y] == '1' || map[v.x][v.y] == 'V')

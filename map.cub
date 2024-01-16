@@ -1,4 +1,4 @@
-C 192,192,192
+C 135,206,250
 EA ./textures/wall4.png
 
 WE ./textures/wall3.png
@@ -7,7 +7,7 @@ SO ./textures/wall2.png
 
 NO ./textures/wall1.png
 
-F 139,69,19
+F 100,140,60
 
 
 

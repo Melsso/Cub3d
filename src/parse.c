@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:00:26 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/11 12:54:47 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/15 15:41:14 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	check_contents(char *line, t_cub *data)
 	get_paths(data);
 }
 
-char	*read_stuff(t_cub *data, int fd)
+char	*read_stuff(int fd)
 {
 	char	*line;
 	char	*tmp;
@@ -68,7 +68,6 @@ char	**copy_map(t_cub *data, int size)
 {
 	int		i;
 	int		j;
-	char	*line;
 	char	**map;
 
 	map = (char **)malloc(sizeof(char *) * size);
@@ -100,7 +99,7 @@ void	read_content(t_cub *data, char **argv)
 	fd = open(argv[1], O_RDONLY);
 	if (fd == -1)
 		ft_error("Error\nCould not open file!", NULL, NULL, 0);
-	line = read_stuff(data, fd);
+	line = read_stuff(fd);
 	check_contents(line, data);
 	clean_map(data);
 	check_valid_map(data);

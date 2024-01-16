@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:47:30 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/10 16:35:27 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/16 17:12:07 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,27 +21,28 @@ void	set_vec(char c, t_cub *data)
 		sign *= -1;
 	if (c == 'N' || c == 'S')
 	{
-		data->vecs[1] = (t_vec2){0, 1 * -sign};
-		data->vecs[2] = (t_vec2){FOV * sign, 0};
+		data->vecs[1] = (t_vec2){0.0, 1 * -sign};
+		data->vecs[2] = (t_vec2){FOV * sign, 0.0};
 	}
 	else
 	{
-		data->vecs[1] = (t_vec2){-1 * sign, 0};
-		data->vecs[2] = (t_vec2){0, FOV * -sign};
+		data->vecs[1] = (t_vec2){-1.0 * sign, 0.0};
+		data->vecs[2] = (t_vec2){0.0, FOV * -sign};
 	}
 }
 
 void	get_data(t_cub *data)
 {
-	int	i;
-	int	j;
+	int		i;
+	int		j;
+	size_t	w;
 
 	i = -1;
-	data->w = 0;
+	w = 0;
 	while (data->map[++i])
 	{
-		if (ft_strlen(data->map[i]) > data->w)
-			data->w = ft_strlen(data->map[i]);
+		if (ft_strlen(data->map[i]) > w)
+			w = ft_strlen(data->map[i]);
 		j = -1;
 		while (data->map[i][++j])
 		{
@@ -54,14 +55,14 @@ void	get_data(t_cub *data)
 			}
 		}
 	}
-	data->h = i;
 }
 
 void	init(t_cub *data)
 {
 	get_data(data);
 	data->win = NULL;
-	data->win = mlx_init(WIDTH, HEIGHT, "Cub3d", false);
+	mlx_set_setting(MLX_STRETCH_IMAGE, true);
+	data->win = mlx_init(WIDTH, HEIGHT, "Cub3d", true);
 	if (!data->win)
 		ft_error("Error\nMlx_init failure!", data, NULL, 1);
 	data->img = mlx_new_image(data->win, WIDTH, HEIGHT);
@@ -75,13 +76,16 @@ int	rotate_camera(t_vec2 *vecs, short dir)
 {
 	double	cos_a;
 	double	sin_a;
+	double	tmp;
 
 	cos_a = cos(dir * ROT);
 	sin_a = sin(dir * ROT);
+	tmp = vecs[1].x;
 	vecs[1].x = (vecs[1].x * cos_a) - (vecs[1].y * sin_a);
-	vecs[1].y = (vecs[1].x * sin_a) + (vecs[1].y * cos_a);
+	vecs[1].y = (tmp * sin_a) + (vecs[1].y * cos_a);
+	tmp = vecs[2].x;
 	vecs[2].x = (vecs[2].x * cos_a) - (vecs[2].y * sin_a);
-	vecs[2].y = (vecs[2].x * sin_a) + (vecs[2].y * cos_a);
+	vecs[2].y = (tmp * sin_a) + (vecs[2].y * cos_a);
 	return (1);
 }
 

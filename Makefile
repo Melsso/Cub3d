@@ -2,8 +2,8 @@ NAME = cub3d
 
 CC = cc
 
-CFLAGS =  -g
-LDFLAGS = -flto -O3 -march=nocona -g
+CFLAGS =  -g -Wall -Werror -Wextra -Wunreachable-code -Ofast
+LDFLAGS = -pthread -lm
 OBJ_DIR = obj/
 SRC_DIR = src/
 

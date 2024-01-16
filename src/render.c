@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 13:53:55 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/11 13:10:32 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/16 17:14:03 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,18 @@
 
 void	raycast(t_cub *data, t_ray *ray)
 {
-	short		x;
-	double		s_fact;
-	t_vec		vec[2];
-	t_vec2		vecs[2];
+	short	x;
+	short	w;
+	t_vec	vec[2];
+	t_vec2	vecs[2];
 
 	x = -1;
-	while (++x < (short)WIDTH)
+	w = (short)data->img->width;
+	while (++x < w)
 	{
 		get_info(data, ray, x, vecs);
 		fix_ray(data->vecs, ray, vecs, vec);
-		launch_ray(data->map, ray, vecs, vec);
+		launch_ray(data->map, ray, vecs, vec[0]);
 		if (ray->axis == 'X')
 		{
 			ray->distance = vecs[1].x - vecs[0].x;
@@ -43,19 +44,47 @@ void	paint(mlx_image_t *img, t_vec3 *cols)
 {
 	unsigned short	x;
 	unsigned short	y;
+	short			h;
+	short			w;
 	int32_t			co[2];
 
 	co[0] = col(cols[0].x, cols[0].y, cols[0].z);
 	co[1] = col(cols[1].x, cols[1].y, cols[1].z);
+	w = (short)img->width;
+	h = (short)img->height;
 	x = -1;
-	while (++x < WIDTH)
+	while (++x < w)
 	{
 		y = 0;
-		while (y < HEIGHT / 2)
+		while (y < h / 2)
 			mlx_put_pixel(img, x, y++, co[1]);
-		while (y < HEIGHT)
+		while (y < h - 1)
 			mlx_put_pixel(img, x, y++, co[0]);
 	}
+}
+
+static int	m_ev(t_cub *data, int *f)
+{
+	t_vec	mouse;
+	int		pos;
+	short	dir;
+
+	*f = 0;
+	if (mlx_is_mouse_down(data->win, MLX_MOUSE_BUTTON_LEFT))
+	{
+		mlx_get_mouse_pos(data->win, &mouse.x, &mouse.y);
+		pos = data->img->width / 2;
+		if (mouse.x != pos)
+		{
+			if (mouse.x > pos)
+				dir = 1;
+			else
+				dir = -1;
+			rotate_camera(data->vecs, dir);
+			return (1);
+		}
+	}
+	return (0);
 }
 
 void	events(void *param)
@@ -65,9 +94,13 @@ void	events(void *param)
 	int		f;
 
 	data = param;
-	f = 0;
+	f = m_ev(data, &f);
 	if (mlx_is_key_down(data->win, MLX_KEY_ESCAPE))
 		mlx_close_window(data->win);
+	if (mlx_is_key_down(data->win, MLX_KEY_RIGHT))
+		f = rotate_camera(data->vecs, 1);
+	if (mlx_is_key_down(data->win, MLX_KEY_LEFT))
+		f = rotate_camera(data->vecs, -1);
 	if (mlx_is_key_down(data->win, MLX_KEY_W))
 		f = movement(data->vecs, data->map, 1);
 	if (mlx_is_key_down(data->win, MLX_KEY_S))
@@ -76,10 +109,6 @@ void	events(void *param)
 		f = movement(data->vecs, data->map, 3);
 	if (mlx_is_key_down(data->win, MLX_KEY_D))
 		f = movement(data->vecs, data->map, 4);
-	if (mlx_is_key_down(data->win, MLX_KEY_RIGHT))
-		f = rotate_camera(data->vecs, 1);
-	if (mlx_is_key_down(data->win, MLX_KEY_LEFT))
-		f = rotate_camera(data->vecs, -1);
 	if (f)
 	{
 		paint(data->img, data->cols);
