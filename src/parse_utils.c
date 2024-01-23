@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 16:54:23 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/23 13:25:48 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 17:34:12 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,10 @@ void	get_path(char *name, char *str, t_cub *data, char *line)
 	else if (!ft_strncmp(name, "SO", 3) && !data->tex[1])
 		data->tex[1] = tex;
 	else
+	{
+		mlx_delete_texture(tex);
 		call_err(data, "Error\nMultiple initializations", NULL, line);
+	}
 }
 
 void	get_config(t_cub *data, char *str, char *line)

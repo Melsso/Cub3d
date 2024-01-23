@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 18:10:47 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/23 12:25:55 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 17:34:59 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	free_split(char **mat)
 		free(mat[i]);
 		mat[i] = NULL;
 	}
+	free(mat);
 	mat = NULL;
 }
 
