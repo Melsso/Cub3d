@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/14 13:53:55 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/16 17:14:03 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 16:09:08 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,30 +63,6 @@ void	paint(mlx_image_t *img, t_vec3 *cols)
 	}
 }
 
-static int	m_ev(t_cub *data, int *f)
-{
-	t_vec	mouse;
-	int		pos;
-	short	dir;
-
-	*f = 0;
-	if (mlx_is_mouse_down(data->win, MLX_MOUSE_BUTTON_LEFT))
-	{
-		mlx_get_mouse_pos(data->win, &mouse.x, &mouse.y);
-		pos = data->img->width / 2;
-		if (mouse.x != pos)
-		{
-			if (mouse.x > pos)
-				dir = 1;
-			else
-				dir = -1;
-			rotate_camera(data->vecs, dir);
-			return (1);
-		}
-	}
-	return (0);
-}
-
 void	events(void *param)
 {
 	t_cub	*data;
@@ -94,7 +70,7 @@ void	events(void *param)
 	int		f;
 
 	data = param;
-	f = m_ev(data, &f);
+	f = 0;
 	if (mlx_is_key_down(data->win, MLX_KEY_ESCAPE))
 		mlx_close_window(data->win);
 	if (mlx_is_key_down(data->win, MLX_KEY_RIGHT))

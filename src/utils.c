@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 18:10:47 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/11 13:10:49 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 12:25:55 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,16 @@ char	**cp_map(t_cub *data)
 	i = -1;
 	while (data->map[++i])
 		;
-	map = (char **)malloc(sizeof(char *) * i);
+	map = (char **)malloc(sizeof(char *) * (i + 1));
 	if (!map)
-		ft_error("Error\nMalloc error!", data, NULL, 0);
-	i = -1;
-	while (data->map[++i])
+		ft_error("Error\nMalloc error!", data, NULL, 1);
+	i = 0;
+	while (data->map[i])
 	{
 		map[i] = ft_strdup(data->map[i]);
 		if (!map[i])
-			ft_error("Error\nMalloc error!", data, map, 0);
+			ft_error("Error\nMalloc error!", data, map, 1);
+		i++;
 	}
 	map[i] = NULL;
 	return (map);
@@ -47,18 +48,18 @@ void	free_split(char **mat)
 
 	if (!mat)
 		return ;
-	i = 0;
-	while (mat[i])
+	i = -1;
+	while (mat[++i])
 	{
 		free(mat[i]);
-		mat[i++] = NULL;
+		mat[i] = NULL;
 	}
 	mat = NULL;
 }
 
-void	call_err(char *msg, t_cub *data, char **mat, char **m)
+void	call_err(t_cub *data, char *msg, char **mat, char *line)
 {
-	free_split(m);
+	free(line);
 	ft_error(msg, data, mat, 1);
 }
 
@@ -68,7 +69,7 @@ void	ft_error(char *msg, t_cub *data, char **mat, int flag)
 	int	ex_stat;
 
 	ex_stat = 0;
-	if (flag)
+	if (flag && data)
 	{
 		i = -1;
 		while (++i < 4)
@@ -78,6 +79,8 @@ void	ft_error(char *msg, t_cub *data, char **mat, int flag)
 			mlx_delete_image(data->win, data->img);
 		if (data->win)
 			mlx_terminate(data->win);
+		if (data->map)
+			free_split(data->map);
 	}
 	if (msg)
 	{

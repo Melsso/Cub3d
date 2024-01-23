@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 15:56:43 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/16 16:25:37 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 13:56:12 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ int	main(int argc, char **argv)
 		printf("Invalid number of arguments!\n");
 		exit(1);
 	}
-	data.win = NULL;
 	read_content(&data, argv);
 	init(&data);
 	paint(data.img, data.cols);

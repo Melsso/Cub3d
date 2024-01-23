@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 15:48:49 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/16 17:11:45 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 16:05:30 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,6 @@ typedef struct s_cub
 	mlx_image_t		*img;
 }	t_cub;
 
-void	free_split(char **mat);
-void	ft_error(char *msg, t_cub *data, char **mat, int flag);
-void	call_err(char *msg, t_cub *data, char **mat, char **m);
-
 char	*ft_get_buffer(char *str);
 char	*free_all(char *str, char *buffer);
 char	*ft_read(char *str, int fd, ssize_t bytes_read);
@@ -80,11 +76,12 @@ char	*get_next_line(int fd);
 
 void	read_content(t_cub *data, char **argv);
 char	*read_stuff(int fd);
-void	check_contents(char *line, t_cub *data);
-void	get_paths(t_cub *data);
-void	clean_map(t_cub *data);
-char	**copy_map(t_cub *data, int size);
-void	check_valid_map(t_cub *data);
+void	parse(t_cub *data, char *str);
+void	get_map(t_cub *data, char *line, int i);
+void	get_config(t_cub *data, char *str, char *line);
+void	get_path(char *name, char *str, t_cub *data, char *line);
+void	get_rgb(char *name, char *str, t_cub *data, char *line);
+void	check_map(t_cub *data, char *line, int ind);
 int		rec_valid(char **map, t_cub *data, t_vec v, int flag);
 
 void	get_data(t_cub *data);
@@ -97,16 +94,16 @@ void	raycast(t_cub *data, t_ray *ray);
 void	get_info(t_cub *data, t_ray *ray, short x, t_vec2 *dist);
 void	fix_ray(t_vec2 *v, t_ray *ray, t_vec2 *vecs, t_vec *vec);
 void	launch_ray(char **map, t_ray *ray, t_vec2 *vecs, t_vec vec);
-
 void	render_walls(t_ray *ray, short x, t_cub *data);
 
 void	events(void *param);
 int		movement(t_vec2 *vecs, char **map, int dir);
 int		rotate_camera(t_vec2 *vecs, short dir);
 
-//////utils/////
-
 int		is_pos(char c);
 char	**cp_map(t_cub *data);
+void	free_split(char **mat);
+void	ft_error(char *msg, t_cub *data, char **mat, int flag);
+void	call_err(t_cub *data, char *msg, char **mat, char *line);
 
 #endif

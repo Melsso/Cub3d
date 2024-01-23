@@ -6,7 +6,7 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:47:30 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/16 17:12:07 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 16:06:45 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,7 @@ void	init(t_cub *data)
 {
 	get_data(data);
 	data->win = NULL;
-	mlx_set_setting(MLX_STRETCH_IMAGE, true);
-	data->win = mlx_init(WIDTH, HEIGHT, "Cub3d", true);
+	data->win = mlx_init(WIDTH, HEIGHT, "Cub3d", false);
 	if (!data->win)
 		ft_error("Error\nMlx_init failure!", data, NULL, 1);
 	data->img = mlx_new_image(data->win, WIDTH, HEIGHT);

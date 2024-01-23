@@ -6,36 +6,66 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/11 16:00:26 by smallem           #+#    #+#             */
-/*   Updated: 2024/01/15 15:41:14 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 16:04:38 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
-void	check_contents(char *line, t_cub *data)
+static void	parse_2(t_cub *data, char *str, int i)
+{
+	int	tmp;
+
+	tmp = i;
+	while (str[tmp] && (str[tmp] == ' ' || str[tmp] == '\n'))
+	{
+		if (str[tmp] == '\n')
+			i = tmp;
+		tmp++;
+	}
+	get_map(data, str, i);
+}
+
+void	parse(t_cub *data, char *str)
+{
+	char	*ptr[6];
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (str[i] && j < 6)
+	{
+		if (!ft_strncmp(str + i, "EA ", 3) || !ft_strncmp(str + i, "WE ", 3)
+			|| !ft_strncmp(str + i, "SO ", 3) || !ft_strncmp(str + i, "NO ", 3)
+			|| !ft_strncmp(str + i, "C ", 2) || !ft_strncmp(str + i, "F ", 2))
+		{
+			ptr[j++] = str + i;
+			while (str[i] && str[i] != '\n')
+				i++;
+			str[i] = '\0';
+		}
+		else if (str[i] != ' ' && str[i] != '\n')
+			call_err(data, "Error\nInvalid config data", NULL, str);
+		i++;
+	}
+	while (j > 0)
+		get_config(data, ptr[--j], str);
+	parse_2(data, str, i);
+}
+
+static void	set_initial_data(t_cub *data)
 {
 	int	i;
-	int	count;
 
-	data->map = ft_split(line, '\n');
-	free(line);
-	if (!data->map)
-		ft_error("Error\nMalloc error!", NULL, NULL, 0);
+	data->img = NULL;
+	data->win = NULL;
+	data->map = NULL;
 	i = -1;
-	count = 0;
-	while (data->map[++i])
-	{
-		if (!ft_strncmp(data->map[i], "NO", 2)
-			|| !ft_strncmp(data->map[i], "SO", 2)
-			|| !ft_strncmp(data->map[i], "WE", 2)
-			|| !ft_strncmp(data->map[i], "EA", 2)
-			|| !ft_strncmp(data->map[i], "F", 1)
-			|| !ft_strncmp(data->map[i], "C", 1))
-			count++;
-	}
-	if (count != 6)
-		ft_error("Error\nIncomplete map", data, NULL, 1);
-	get_paths(data);
+	while (++i < 4)
+		data->tex[i] = NULL;
+	data->cols[0] = (t_vec3){256, 256, 256};
+	data->cols[1] = (t_vec3){256, 256, 256};
 }
 
 char	*read_stuff(int fd)
@@ -64,27 +94,6 @@ char	*read_stuff(int fd)
 	return (line);
 }
 
-char	**copy_map(t_cub *data, int size)
-{
-	int		i;
-	int		j;
-	char	**map;
-
-	map = (char **)malloc(sizeof(char *) * size);
-	if (!map)
-		ft_error("Error\nMalloc error!", data, NULL, 0);
-	i = 5;
-	j = 0;
-	while (data->map[++i])
-	{
-		map[j] = ft_strdup(data->map[i]);
-		if (!map[j++])
-			ft_error("Error\nMalloc error!", data, map, 1);
-	}
-	map[j] = NULL;
-	return (map);
-}
-
 void	read_content(t_cub *data, char **argv)
 {
 	int		fd;
@@ -100,7 +109,6 @@ void	read_content(t_cub *data, char **argv)
 	if (fd == -1)
 		ft_error("Error\nCould not open file!", NULL, NULL, 0);
 	line = read_stuff(fd);
-	check_contents(line, data);
-	clean_map(data);
-	check_valid_map(data);
+	set_initial_data(data);
+	parse(data, line);
 }

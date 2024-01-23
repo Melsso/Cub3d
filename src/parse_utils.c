@@ -6,122 +6,99 @@
 /*   By: smallem <smallem@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 16:54:23 by smallem           #+#    #+#             */
-/*   Updated: 2023/12/26 13:17:32 by smallem          ###   ########.fr       */
+/*   Updated: 2024/01/23 13:25:48 by smallem          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
-static void	load_tex(t_cub *data, char **mat, int ind)
+static t_vec3	get_col_vec(t_cub *data, char *str, char *line)
 {
-	data->tex[ind] = mlx_load_png(mat[1]);
-	if (!data->tex[ind])
-		ft_error("Error\nMlx_load_png failure!", data, mat, 1);
-}
-
-static void	check_line(t_cub *data, char **mat, char *str)
-{
-	if (mat[0] && !ft_strncmp(mat[0], str, ft_strlen(mat[0])) && mat[1]
-		&& !mat[2])
-	{
-		if (!ft_strncmp(str, "NO", 2))
-			load_tex(data, mat, 0);
-		if (!ft_strncmp(str, "SO", 2))
-			load_tex(data, mat, 1);
-		if (!ft_strncmp(str, "EA", 2))
-			load_tex(data, mat, 3);
-		if (!ft_strncmp(str, "WE", 2))
-			load_tex(data, mat, 2);
-		free_split(mat);
-		free(str);
-	}
-	else
-	{
-		free(str);
-		ft_error("Error\nBad texture path!", data, mat, 1);
-	}
-}
-
-static int	check_colors(t_cub *data, char **mat, char **m)
-{
-	int		i;
-	int		j;
-	char	*tmp;
-
-	i = -1;
-	while (m[++i])
-	{
-		tmp = m[i];
-		m[i] = ft_strtrim(tmp, " \t");
-		free(tmp);
-		if (!m[i])
-			call_err("Error\nMalloc error!", data, mat, m);
-		j = -1;
-		while (m[i][++j])
-		{
-			if (m[i][j] < '0' || m[i][j] > '9')
-				call_err("Error\nBad color format", data, mat, m);
-		}
-	}
-	if (i != 3)
-		call_err("Error\nBad color format", data, mat, m);
-	return (1);
-}
-
-static void	get_colors(t_cub *data, char **mat, int ind)
-{
-	char	**m;
 	t_vec3	vec;
+	char	**mat;
+	char	*val;
+	int		i;
 
+	mat = ft_split(str, ',');
 	if (!mat)
-		ft_error("Error\nMalloc error!", data, NULL, 1);
-	if (mat[0] && (!ft_strncmp(mat[0], "C", ft_strlen(mat[0]))
-			|| !ft_strncmp(mat[0], "F", ft_strlen(mat[0]))) && mat[1]
-		&& !mat[2])
+		call_err(data, "Error\nMalloc error", NULL, line);
+	if (!mat[0] || !mat[1] || !mat[2] || mat[3])
+		call_err(data, "Error\nInvalid rgb format", mat, line);
+	i = -1;
+	while (++i < 3)
 	{
-		m = ft_split(mat[1], ',');
-		if (!m)
-			ft_error("Error\nMalloc error!", data, mat, 1);
-		if (check_colors(data, mat, m))
-		{
-			vec = (t_vec3){(unsigned short)ft_atoi(m[0]),
-				(unsigned short)ft_atoi(m[1]), (unsigned short)ft_atoi(m[2])};
-			if (data->map[ind][0] == 'F')
-				data->cols[0] = vec;
-			else
-				data->cols[1] = vec;
-		}
-		return (free_split(mat), free_split(m));
+		val = ft_strtrim(mat[i], " \n");
+		if (!val)
+			call_err(data, "Error\nMalloc error", mat, line);
+		free(mat[i]);
+		mat[i] = val;
 	}
-	else
-		ft_error("Error\nBad color format!", data, mat, 1);
+	vec = (t_vec3){ft_atoi(mat[0]), ft_atoi(mat[1]), ft_atoi(mat[2])};
+	free_split(mat);
+	return (vec);
 }
 
-void	get_paths(t_cub *data)
+void	get_rgb(char *name, char *str, t_cub *data, char *line)
 {
-	int		i;
-	char	**mat;
-	char	*str;
+	t_vec3	v;
 
-	i = -1;
-	while (data->map[++i])
+	v = get_col_vec(data, str, line);
+	if (v.x > 255 || v.x < 0 || v.y > 255 || v.y < 0 || v.z > 255 || v.z < 0)
+		call_err(data, "Error\nInvalid rgb format", NULL, line);
+	if (!ft_strncmp(name, "F", 2))
 	{
-		if (!ft_strncmp(data->map[i], "NO", 2) || !ft_strncmp(data->map[i],
-				"SO", 2) || !ft_strncmp(data->map[i], "EA", 2)
-			|| !ft_strncmp(data->map[i], "WE", 2))
-		{
-			mat = ft_split(data->map[i], ' ');
-			if (!mat)
-				ft_error("Error\n", data, NULL, 1);
-			str = ft_substr(data->map[i], 0, 2);
-			if (!str)
-				ft_error("Error\nMalloc error!", data, mat, 1);
-			check_line(data, mat, str);
-		}
-		else if (data->map[i][0] == 'F' || data->map[i][0] == 'C')
-		{
-			mat = ft_split(data->map[i], ' ');
-			get_colors(data, mat, i);
-		}
+		if (data->cols[0].x == 256 && data->cols[0].y == 256
+			&& data->cols[0].z == 256)
+			data->cols[0] = v;
+		else
+			call_err(data, "Error\nMultiple initializations", NULL, line);
 	}
+	else
+	{
+		if (data->cols[1].x == 256 && data->cols[1].y == 256
+			&& data->cols[1].z == 256)
+			data->cols[1] = v;
+		else
+			call_err(data, "Error\nMultiple initializations", NULL, line);
+	}
+}
+
+void	get_path(char *name, char *str, t_cub *data, char *line)
+{
+	char			*path;
+	mlx_texture_t	*tex;
+
+	path = ft_strtrim(str, " \n");
+	if (!path)
+		call_err(data, "Error\nMalloc error", NULL, line);
+	tex = mlx_load_png(path);
+	free(path);
+	if (!tex)
+		call_err(data, "Error\nMlx_load_png failure", NULL, line);
+	if (!ft_strncmp(name, "EA", 3) && !data->tex[3])
+		data->tex[3] = tex;
+	else if (!ft_strncmp(name, "WE", 3) && !data->tex[2])
+		data->tex[2] = tex;
+	else if (!ft_strncmp(name, "NO", 3) && !data->tex[0])
+		data->tex[0] = tex;
+	else if (!ft_strncmp(name, "SO", 3) && !data->tex[1])
+		data->tex[1] = tex;
+	else
+		call_err(data, "Error\nMultiple initializations", NULL, line);
+}
+
+void	get_config(t_cub *data, char *str, char *line)
+{
+	int	flag;
+	int	i;
+
+	i = 0;
+	flag = (!ft_strncmp(str, "C ", 2) || !ft_strncmp(str, "F ", 2));
+	while (str[i] && str[i] != ' ')
+		i++;
+	str[i++] = '\0';
+	if (flag)
+		get_rgb(str, str + i, data, line);
+	else
+		get_path(str, str + i, data, line);
 }
