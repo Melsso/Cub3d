@@ -48,7 +48,7 @@ C 225,30,0
 11110111 1110101 101111010001
 11111111 1111111 111111111111
 ```
-##Error Handling
+## Error Handling
 - If any misconfiguration is encountered in the file, the program will exit properly and return "Error\n" followed by an explicit error message.
 
 ## Acknowledgments
